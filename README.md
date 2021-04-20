@@ -244,7 +244,27 @@ It looks like you are trying to access MongoDB over HTTP on the native driver po
 
 # 6. Make employee's yaml file and run it. Check where the pod is running.
 ```
-$ cat employee_latest_nodeSelector.yaml 
+$ cat employee_latest_nodeSelector_svc.yaml 
+apiVersion: v1
+kind: Service
+metadata:
+  name: employee-test
+  labels:
+    run: employee-test
+spec:
+#  type: NodePort
+  ports:
+  - port: 5001
+    targetPort: 5001
+    protocol: TCP
+    name: https
+  - port: 5000
+    targetPort: 5000
+    protocol: TCP
+    name: http
+  selector:
+    run: employee-test
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -273,22 +293,22 @@ spec:
         location: telaviv
 
 $ kubectl describe pod employee-test
-Name:         employee-test-84b567445f-lmgf9
+Name:         employee-test-84b567445f-fw8k7
 Namespace:    default
 Priority:     0
-Node:         minikube-m02/192.168.99.101
-Start Time:   Sun, 18 Apr 2021 20:33:31 +0900
+Node:         minikube-m02/192.168.99.110
+Start Time:   Wed, 21 Apr 2021 00:01:33 +0900
 Labels:       pod-template-hash=84b567445f
               run=employee-test
 Annotations:  <none>
 Status:       Running
-IP:           10.244.1.4
+IP:           10.244.1.9
 IPs:
-  IP:           10.244.1.4
+  IP:           10.244.1.9
 Controlled By:  ReplicaSet/employee-test-84b567445f
 Containers:
   employee:
-    Container ID:  docker://83a72ed7c6bcbd220f89838064adf0270997b03ee89ecf2470410a7904c83036
+    Container ID:  docker://5d33b42a535e512120e1194a404c6447c5a1c684bccb6fb55390abdc6d4630eb
     Image:         developeronizuka/employee
     Image ID:      docker-pullable://developeronizuka/employee@sha256:ad36f06fcb5aa8d4da7dc36ac9bf42223617c3330e8dfcaef1b5a30ba9f71084
     Ports:         5001/TCP, 5000/TCP
@@ -296,13 +316,13 @@ Containers:
     Command:
       /usr/local/dotnet/publish/Employee
     State:          Running
-      Started:      Sun, 18 Apr 2021 20:35:15 +0900
+      Started:      Wed, 21 Apr 2021 00:01:36 +0900
     Ready:          True
     Restart Count:  0
     Environment:
       MONGO:  mongo-test
     Mounts:
-      /var/run/secrets/kubernetes.io/serviceaccount from default-token-chlbn (ro)
+      /var/run/secrets/kubernetes.io/serviceaccount from default-token-9hsv7 (ro)
 Conditions:
   Type              Status
   Initialized       True 
@@ -310,9 +330,9 @@ Conditions:
   ContainersReady   True 
   PodScheduled      True 
 Volumes:
-  default-token-chlbn:
+  default-token-9hsv7:
     Type:        Secret (a volume populated by a Secret)
-    SecretName:  default-token-chlbn
+    SecretName:  default-token-9hsv7
     Optional:    false
 QoS Class:       BestEffort
 Node-Selectors:  location=telaviv
@@ -321,14 +341,14 @@ Tolerations:     node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
 Events:
   Type    Reason     Age    From               Message
   ----    ------     ----   ----               -------
-  Normal  Scheduled  2m26s  default-scheduler  Successfully assigned default/employee-test-84b567445f-lmgf9 to minikube-m02
-  Normal  Pulling    2m25s  kubelet            Pulling image "developeronizuka/employee"
-  Normal  Pulled     42s    kubelet            Successfully pulled image "developeronizuka/employee" in 1m43.358795194s
-  Normal  Created    42s    kubelet            Created container employee
-  Normal  Started    42s    kubelet            Started container employee
+  Normal  Scheduled  4m19s  default-scheduler  Successfully assigned default/employee-test-84b567445f-fw8k7 to minikube-m02
+  Normal  Pulling    4m18s  kubelet            Pulling image "developeronizuka/employee"
+  Normal  Pulled     4m16s  kubelet            Successfully pulled image "developeronizuka/employee" in 2.416408504s
+  Normal  Created    4m16s  kubelet            Created container employee
+  Normal  Started    4m16s  kubelet            Started container employee
 
 $ kubectl -it exec dnsutils -- /bin/sh
-# curl https://10.244.1.4:5001 -k
+# curl https://employee-test:5001 -k
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -396,11 +416,8 @@ $ kubectl -it exec dnsutils -- /bin/sh
 </html>
 ```
 
-# 7. Expose employee's deployment.
+# 7. Check if employee's deployment is exposed.
 ```
-$ kubectl expose deployment employee-test
-service/employee-test exposed
-
 $ minikube service list
 |-------------|---------------|--------------|-----|
 |  NAMESPACE  |     NAME      | TARGET PORT  | URL |
