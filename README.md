@@ -319,45 +319,15 @@ $ kubectl -it exec dnsutils -- /bin/sh
 </html>
 ```
 # 9. Create the persistent volume and make nginx's config on it.
-```
-$ cat nginx-pv.yaml 
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: hostpath-pv
-spec:
-  storageClassName: standard
-  volumeMode: Filesystem
-  capacity:
-    storage: 1Gi
-  persistentVolumeReclaimPolicy: Retain
-  accessModes:
-    - ReadWriteOnce
-  hostPath:
-    path: "/var/data"
-    type: DirectoryOrCreate
-
-$ cat nginx-pvc.yaml 
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: hostpath-pvc
-spec:
-  storageClassName: standard
-  accessModes:
-  - ReadWriteOnce
-  volumeMode: Filesystem
-  resources:
-    requests:
-      storage: 1Gi
-      
+```     
 $ kubectl create -f nginx-pv.yaml 
 $ kubectl create -f nginx-pvc.yaml 
 
 $ ssh docker@192.168.99.109
 docker@192.168.99.109's password: tcuser
 
-$ cat /var/data/default.conf 
+$ sudo mkdir -p /var/data
+$ sudo vi /var/data/default.conf 
 upstream proxy.com {
         server employee-test:5001;
 }
