@@ -76,57 +76,8 @@ $ kubectl describe node |grep location
 $ kubectl create -f mongo_latest_nodeSelector_svc.yaml 
 deployment.apps/mongo-test created
 
-$ kubectl describe pod mongo-test
-Name:         mongo-test-7cb544b5bd-nm7dk
-Namespace:    default
-Priority:     0
+$ kubectl describe pod mongo-test |grep Node:
 Node:         minikube-m03/192.168.99.111
-Start Time:   Wed, 21 Apr 2021 12:51:13 +0900
-Labels:       pod-template-hash=7cb544b5bd
-              run=mongo-test
-Annotations:  <none>
-Status:       Running
-IP:           10.244.2.8
-IPs:
-  IP:           10.244.2.8
-Controlled By:  ReplicaSet/mongo-test-7cb544b5bd
-Containers:
-  mongodb:
-    Container ID:   docker://655d4c58396e5985af52058fff729888dd90982ec5a6813ca108d3a75ccb6ce1
-    Image:          docker.io/mongo
-    Image ID:       docker-pullable://mongo@sha256:b66f48968d757262e5c29979e6aa3af944d4ef166314146e1b3a788f0d191ac3
-    Port:           27017/TCP
-    Host Port:      0/TCP
-    State:          Running
-      Started:      Wed, 21 Apr 2021 12:51:18 +0900
-    Ready:          True
-    Restart Count:  0
-    Environment:    <none>
-    Mounts:
-      /var/run/secrets/kubernetes.io/serviceaccount from default-token-9hsv7 (ro)
-Conditions:
-  Type              Status
-  Initialized       True 
-  Ready             True 
-  ContainersReady   True 
-  PodScheduled      True 
-Volumes:
-  default-token-9hsv7:
-    Type:        Secret (a volume populated by a Secret)
-    SecretName:  default-token-9hsv7
-    Optional:    false
-QoS Class:       BestEffort
-Node-Selectors:  location=houston
-Tolerations:     node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
-                 node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
-Events:
-  Type    Reason     Age   From               Message
-  ----    ------     ----  ----               -------
-  Normal  Scheduled  90s   default-scheduler  Successfully assigned default/mongo-test-7cb544b5bd-nm7dk to minikube-m03
-  Normal  Pulling    89s   kubelet            Pulling image "docker.io/mongo"
-  Normal  Pulled     85s   kubelet            Successfully pulled image "docker.io/mongo" in 3.750146474s
-  Normal  Created    85s   kubelet            Created container mongodb
-  Normal  Started    85s   kubelet            Started container mongodb
 ```
 # 5. Check if mongo's deployment is exposed.
 ```
@@ -179,60 +130,8 @@ It looks like you are trying to access MongoDB over HTTP on the native driver po
 ```
 $ kubectl create -f employee_latest_nodeSelector_svc.yaml
 
-$ kubectl describe pod employee-test
-Name:         employee-test-84b567445f-fw8k7
-Namespace:    default
-Priority:     0
+$ kubectl describe pod employee-test |grep Node:
 Node:         minikube-m02/192.168.99.110
-Start Time:   Wed, 21 Apr 2021 00:01:33 +0900
-Labels:       pod-template-hash=84b567445f
-              run=employee-test
-Annotations:  <none>
-Status:       Running
-IP:           10.244.1.9
-IPs:
-  IP:           10.244.1.9
-Controlled By:  ReplicaSet/employee-test-84b567445f
-Containers:
-  employee:
-    Container ID:  docker://5d33b42a535e512120e1194a404c6447c5a1c684bccb6fb55390abdc6d4630eb
-    Image:         developeronizuka/employee
-    Image ID:      docker-pullable://developeronizuka/employee@sha256:ad36f06fcb5aa8d4da7dc36ac9bf42223617c3330e8dfcaef1b5a30ba9f71084
-    Ports:         5001/TCP, 5000/TCP
-    Host Ports:    0/TCP, 0/TCP
-    Command:
-      /usr/local/dotnet/publish/Employee
-    State:          Running
-      Started:      Wed, 21 Apr 2021 00:01:36 +0900
-    Ready:          True
-    Restart Count:  0
-    Environment:
-      MONGO:  mongo-test
-    Mounts:
-      /var/run/secrets/kubernetes.io/serviceaccount from default-token-9hsv7 (ro)
-Conditions:
-  Type              Status
-  Initialized       True 
-  Ready             True 
-  ContainersReady   True 
-  PodScheduled      True 
-Volumes:
-  default-token-9hsv7:
-    Type:        Secret (a volume populated by a Secret)
-    SecretName:  default-token-9hsv7
-    Optional:    false
-QoS Class:       BestEffort
-Node-Selectors:  location=telaviv
-Tolerations:     node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
-                 node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
-Events:
-  Type    Reason     Age    From               Message
-  ----    ------     ----   ----               -------
-  Normal  Scheduled  4m19s  default-scheduler  Successfully assigned default/employee-test-84b567445f-fw8k7 to minikube-m02
-  Normal  Pulling    4m18s  kubelet            Pulling image "developeronizuka/employee"
-  Normal  Pulled     4m16s  kubelet            Successfully pulled image "developeronizuka/employee" in 2.416408504s
-  Normal  Created    4m16s  kubelet            Created container employee
-  Normal  Started    4m16s  kubelet            Started container employee
 ```
 
 # 7. Check if employee's deployment is exposed.
@@ -348,11 +247,12 @@ server {
 $ kubectl create -f nginx_1.14.2_nodeSelector_svc.yaml 
 deployment.apps/nginx-test created
 
+$ kubectl describe pod nginx-test |grep Node:
+Node:         minikube/192.168.99.109
 ```
 
 # 11. Check if employee's deployment is exposed. Access the following URL from Host's blowser.
 ```
-
 $ minikube service list
 |-------------|---------------|--------------|-----------------------------|
 |  NAMESPACE  |     NAME      | TARGET PORT  |             URL             |
@@ -363,6 +263,5 @@ $ minikube service list
 | default     | nginx-test    | http/8080    | http://192.168.99.109:32502 |
 | kube-system | kube-dns      | No node port |
 |-------------|---------------|--------------|-----------------------------|
-
 
 ```
