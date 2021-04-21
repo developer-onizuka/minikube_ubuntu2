@@ -2,7 +2,7 @@
 
 | deployment | VM | ExposedIP | clusterIP | container's port |
 | --- | --- | --- | --- | --- |
-| nginx-test | minikube | 192.168.99.100 | don't care. resolved by dns | 80 | 
+| nginx-test | minikube | 192.168.99.109 | don't care. resolved by dns | 80 | 
 | mongo-test | minikube-m03 | N/A | don't care. resolved by dns | 27017 | 
 | employee-test | minikube-m02 | N/A | don't care. resolved by dns | 5001 |
 
@@ -26,36 +26,7 @@ $ minikube start --driver=virtualbox --nodes=3
 😄  minikube v1.19.0 on Ubuntu 20.04
 ✨  Using the virtualbox driver based on user configuration
 💿  Downloading VM boot image ...
-    > minikube-v1.19.0.iso.sha256: 65 B / 65 B [-------------] 100.00% ? p/s 0s
-    > minikube-v1.19.0.iso: 244.49 MiB / 244.49 MiB  100.00% 2.75 MiB p/s 1m29.
-👍  Starting control plane node minikube in cluster minikube
-💾  Downloading Kubernetes v1.20.2 preload ...
-    > preloaded-images-k8s-v10-v1...: 491.71 MiB / 491.71 MiB  100.00% 2.26 MiB
-🔥  Creating virtualbox VM (CPUs=2, Memory=2633MB, Disk=20000MB) ...
-🐳  Preparing Kubernetes v1.20.2 on Docker 20.10.4 ...
-    ▪ Generating certificates and keys ...
-    ▪ Booting up control plane ...
-    ▪ Configuring RBAC rules ...
-🔗  Configuring CNI (Container Networking Interface) ...
-🔎  Verifying Kubernetes components...
-    ▪ Using image gcr.io/k8s-minikube/storage-provisioner:v5
-🌟  Enabled addons: storage-provisioner, default-storageclass
-
-👍  Starting node minikube-m02 in cluster minikube
-🔥  Creating virtualbox VM (CPUs=2, Memory=2633MB, Disk=20000MB) ...
-🌐  Found network options:
-    ▪ NO_PROXY=192.168.99.100
-🐳  Preparing Kubernetes v1.20.2 on Docker 20.10.4 ...
-    ▪ env NO_PROXY=192.168.99.100
-🔎  Verifying Kubernetes components...
-
-👍  Starting node minikube-m03 in cluster minikube
-🔥  Creating virtualbox VM (CPUs=2, Memory=2633MB, Disk=20000MB) ...
-🌐  Found network options:
-    ▪ NO_PROXY=192.168.99.100,192.168.99.101
-🐳  Preparing Kubernetes v1.20.2 on Docker 20.10.4 ...
-    ▪ env NO_PROXY=192.168.99.100
-    ▪ env NO_PROXY=192.168.99.100,192.168.99.101
+ ...
 🔎  Verifying Kubernetes components...
 🏄  Done! kubectl is now configured to use "minikube" cluster and "default" namespace by default
 ```
@@ -63,9 +34,9 @@ $ minikube start --driver=virtualbox --nodes=3
 # 3. Check the node list and status
 ```
 $ minikube node list
-minikube	192.168.99.100
-minikube-m02	192.168.99.101
-minikube-m03	192.168.99.102
+minikube	192.168.99.109
+minikube-m02	192.168.99.110
+minikube-m03	192.168.99.111
 
 $ minikube status
 minikube
@@ -110,7 +81,7 @@ metadata:
   labels:
     run: mongo-test
 spec:
-  type: NodePort
+#  type: NodePort
   ports:
   - port: 27017
     targetPort: 27017 
@@ -145,33 +116,33 @@ $ kubectl create -f mongo_latest_nodeSelector_svc.yaml
 deployment.apps/mongo-test created
 
 $ kubectl describe pod mongo-test
-Name:         mongo-test-7cb544b5bd-29c4v
+Name:         mongo-test-7cb544b5bd-nm7dk
 Namespace:    default
 Priority:     0
-Node:         minikube-m03/192.168.99.102
-Start Time:   Sun, 18 Apr 2021 19:00:54 +0900
+Node:         minikube-m03/192.168.99.111
+Start Time:   Wed, 21 Apr 2021 12:51:13 +0900
 Labels:       pod-template-hash=7cb544b5bd
               run=mongo-test
 Annotations:  <none>
 Status:       Running
-IP:           10.244.2.2
+IP:           10.244.2.8
 IPs:
-  IP:           10.244.2.2
+  IP:           10.244.2.8
 Controlled By:  ReplicaSet/mongo-test-7cb544b5bd
 Containers:
   mongodb:
-    Container ID:   docker://c80969dccf56c3f34043493572d0394ba6128fdc941dc8a976e369f43441484f
+    Container ID:   docker://655d4c58396e5985af52058fff729888dd90982ec5a6813ca108d3a75ccb6ce1
     Image:          docker.io/mongo
     Image ID:       docker-pullable://mongo@sha256:b66f48968d757262e5c29979e6aa3af944d4ef166314146e1b3a788f0d191ac3
     Port:           27017/TCP
     Host Port:      0/TCP
     State:          Running
-      Started:      Sun, 18 Apr 2021 19:02:31 +0900
+      Started:      Wed, 21 Apr 2021 12:51:18 +0900
     Ready:          True
     Restart Count:  0
     Environment:    <none>
     Mounts:
-      /var/run/secrets/kubernetes.io/serviceaccount from default-token-chlbn (ro)
+      /var/run/secrets/kubernetes.io/serviceaccount from default-token-9hsv7 (ro)
 Conditions:
   Type              Status
   Initialized       True 
@@ -179,9 +150,9 @@ Conditions:
   ContainersReady   True 
   PodScheduled      True 
 Volumes:
-  default-token-chlbn:
+  default-token-9hsv7:
     Type:        Secret (a volume populated by a Secret)
-    SecretName:  default-token-chlbn
+    SecretName:  default-token-9hsv7
     Optional:    false
 QoS Class:       BestEffort
 Node-Selectors:  location=houston
@@ -190,11 +161,11 @@ Tolerations:     node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
 Events:
   Type    Reason     Age   From               Message
   ----    ------     ----  ----               -------
-  Normal  Scheduled  105s  default-scheduler  Successfully assigned default/mongo-test-7cb544b5bd-29c4v to minikube-m03
-  Normal  Pulling    105s  kubelet            Pulling image "docker.io/mongo"
-  Normal  Pulled     8s    kubelet            Successfully pulled image "docker.io/mongo" in 1m36.500647634s
-  Normal  Created    8s    kubelet            Created container mongodb
-  Normal  Started    8s    kubelet            Started container mongodb
+  Normal  Scheduled  90s   default-scheduler  Successfully assigned default/mongo-test-7cb544b5bd-nm7dk to minikube-m03
+  Normal  Pulling    89s   kubelet            Pulling image "docker.io/mongo"
+  Normal  Pulled     85s   kubelet            Successfully pulled image "docker.io/mongo" in 3.750146474s
+  Normal  Created    85s   kubelet            Created container mongodb
+  Normal  Started    85s   kubelet            Started container mongodb
 ```
 # 5. Check if mongo's deployment is exposed.
 ```
@@ -225,21 +196,22 @@ spec:
 $ kubectl create -f dnsutils_latest.yaml 
 pod/dnsutils created
 
-$ kubectl exec -it dnsutils -- /bin/sh
+# nslookup mongo-tset
+Server:		10.96.0.10
+Address:	10.96.0.10#53
+
+** server can't find mongo-tset: NXDOMAIN
+
 # nslookup mongo-test
 Server:		10.96.0.10
 Address:	10.96.0.10#53
 
 Name:	mongo-test.default.svc.cluster.local
-Address: 10.110.22.192
-
-# apt-get update
-# apt install curl
-# curl 10.110.22.192:27017
-It looks like you are trying to access MongoDB over HTTP on the native driver port.
+Address: 10.105.128.151
 
 # curl mongo-test:27017
 It looks like you are trying to access MongoDB over HTTP on the native driver port.
+
 ```
 
 # 6. Make employee's yaml file and run it. Check where the pod is running.
@@ -347,73 +319,7 @@ Events:
   Normal  Created    4m16s  kubelet            Created container employee
   Normal  Started    4m16s  kubelet            Started container employee
 
-$ kubectl -it exec dnsutils -- /bin/sh
-# curl https://employee-test:5001 -k
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title> - Employee</title>
-    <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="/css/site.css" />
-</head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" href="/">Employee</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" href="/">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" href="/Home/Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            
-<h1>List of Employees</h1>
 
-<h2></h2>
-
-<a href="/Home/Insert"> Add New Employee</a>
-
-<br /><br />
-
-
-<table border="1" cellpadding="10">
-</table>
-
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
-
-        </main>
-    </div>
-
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2020 - Employee - <a href="/Home/Privacy">Privacy</a>
-        </div>
-    </footer>
-    <script src="/lib/jquery/dist/jquery.min.js"></script>
-    <script src="/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/js/site.js"></script>
-    
-</body>
-</html>
 ```
 
 # 7. Check if employee's deployment is exposed.
