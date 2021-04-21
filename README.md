@@ -7,7 +7,7 @@
 | employee-test | minikube-m02 | N/A | don't care. resolved by dns | 5001 |
 
 
-# 1. Install each package at Ubuntu20.4
+# 1. Install each package on Ubuntu20.4
 ```
 <minikube>
 $ curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube_latest_amd64.deb
@@ -510,7 +510,7 @@ deployment.apps/nginx-test created
 
 ```
 
-# 11. Check if employee's deployment is exposed. Acces the following URL from Host's blowser.
+# 11. Check if employee's deployment is exposed. Access the following URL from Host's blowser.
 ```
 
 $ minikube service list
