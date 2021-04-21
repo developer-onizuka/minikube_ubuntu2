@@ -73,6 +73,9 @@ $ kubectl describe node |grep location
 
 # 4. Make mongo's yaml file and run it. Check where the pod is running.
 ```
+$ kubectl create -f mongo-pv.yaml 
+$ kubectl create -f mongo-pvc.yaml
+
 $ kubectl create -f mongo_latest_nodeSelector_svc.yaml 
 deployment.apps/mongo-test created
 
