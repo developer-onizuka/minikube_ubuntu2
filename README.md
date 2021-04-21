@@ -90,21 +90,6 @@ $ minikube service list
 | kube-system | kube-dns   | No node port |
 |-------------|------------|--------------|-----|
 
-$ cat dnsutils_latest.yaml 
-apiVersion: v1
-kind: Pod
-metadata:
-  name: dnsutils
-  labels:
-    name: dnsutils
-spec:
-  containers:
-  - name: dnsutils
-    image: tutum/dnsutils
-    command:
-    - sleep
-    - "3600"
-
 $ kubectl create -f dnsutils_latest.yaml 
 pod/dnsutils created
 
