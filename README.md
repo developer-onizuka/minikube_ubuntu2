@@ -73,45 +73,6 @@ $ kubectl describe node |grep location
 
 # 4. Make mongo's yaml file and run it. Check where the pod is running.
 ```
-$ cat mongo_latest_nodeSelector_svc.yaml 
-apiVersion: v1
-kind: Service
-metadata:
-  name: mongo-test
-  labels:
-    run: mongo-test
-spec:
-#  type: NodePort
-  ports:
-  - port: 27017
-    targetPort: 27017 
-    protocol: TCP
-    name: mongo
-  selector:
-    run: mongo-test
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: mongo-test
-spec:
-  selector:
-    matchLabels:
-      run: mongo-test
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        run: mongo-test
-    spec:
-      containers:
-      - name: mongodb
-        image: docker.io/mongo
-        ports:
-        - containerPort: 27017
-      nodeSelector:
-        location: houston
-
 $ kubectl create -f mongo_latest_nodeSelector_svc.yaml 
 deployment.apps/mongo-test created
 
@@ -216,53 +177,7 @@ It looks like you are trying to access MongoDB over HTTP on the native driver po
 
 # 6. Make employee's yaml file and run it. Check where the pod is running.
 ```
-$ cat employee_latest_nodeSelector_svc.yaml 
-apiVersion: v1
-kind: Service
-metadata:
-  name: employee-test
-  labels:
-    run: employee-test
-spec:
-#  type: NodePort
-  ports:
-  - port: 5001
-    targetPort: 5001
-    protocol: TCP
-    name: https
-  - port: 5000
-    targetPort: 5000
-    protocol: TCP
-    name: http
-  selector:
-    run: employee-test
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: employee-test
-spec:
-  selector:
-    matchLabels:
-      run: employee-test
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        run: employee-test
-    spec:
-      containers:
-      - name: employee
-        image: developeronizuka/employee
-        ports:
-        - containerPort: 5001
-        - containerPort: 5000
-        env:
-        - name: MONGO
-          value: mongo-test
-        command: ["/usr/local/dotnet/publish/Employee"]
-      nodeSelector:
-        location: telaviv
+$ kubectl create -f employee_latest_nodeSelector_svc.yaml
 
 $ kubectl describe pod employee-test
 Name:         employee-test-84b567445f-fw8k7
@@ -318,8 +233,6 @@ Events:
   Normal  Pulled     4m16s  kubelet            Successfully pulled image "developeronizuka/employee" in 2.416408504s
   Normal  Created    4m16s  kubelet            Created container employee
   Normal  Started    4m16s  kubelet            Started container employee
-
-
 ```
 
 # 7. Check if employee's deployment is exposed.
@@ -459,52 +372,6 @@ server {
 ```
 # 10. Make nginx's yaml file and run it. 
 ```
-$ cat nginx_1.14.2_nodeSelector_svc.yaml 
-apiVersion: v1
-kind: Service
-metadata:
-  name: nginx-test
-  labels:
-    run: nginx-test
-spec:
-  type: LoadBalancer
-  ports:
-  - port: 8080
-    targetPort: 80
-    protocol: TCP
-    name: http
-  selector:
-    run: nginx-test
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: nginx-test
-spec:
-  selector:
-    matchLabels:
-      run: nginx-test
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        run: nginx-test
-    spec:
-      containers:
-      - name: nginx
-        image: nginx:1.14.2
-        volumeMounts:
-        - name: nginx-conf
-          mountPath: /etc/nginx/conf.d
-        ports:
-        - containerPort: 80
-      volumes:
-      - name: nginx-conf
-        persistentVolumeClaim:
-         claimName: hostpath-pvc
-      nodeSelector:
-        location: tokyo
-
 $ kubectl create -f nginx_1.14.2_nodeSelector_svc.yaml 
 deployment.apps/nginx-test created
 
