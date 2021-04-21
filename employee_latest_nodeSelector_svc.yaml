@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: employee-test
+  labels:
+    run: employee-test
+spec:
+#  type: NodePort
+  ports:
+  - port: 5001
+    targetPort: 5001
+    protocol: TCP
+    name: https
+  - port: 5000
+    targetPort: 5000
+    protocol: TCP
+    name: http
+  selector:
+    run: employee-test
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: employee-test
+spec:
+  selector:
+    matchLabels:
+      run: employee-test
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: employee-test
+    spec:
+      containers:
+      - name: employee
+        image: developeronizuka/employee
+        ports:
+        - containerPort: 5001
+        - containerPort: 5000
+        env:
+        - name: MONGO
+          value: mongo-test
+        command: ["/usr/local/dotnet/publish/Employee"]
+      nodeSelector:
+        location: telaviv
