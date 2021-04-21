@@ -31,7 +31,14 @@ spec:
       containers:
       - name: mongodb
         image: docker.io/mongo
+        volumeMounts:
+        - name: mongo-data
+          mountPath: /data/db
         ports:
         - containerPort: 27017
+      volumes:
+        - name: mongo-data
+          persistentVolumeClaim:
+           claimName: mongo-pvc
       nodeSelector:
         location: houston
