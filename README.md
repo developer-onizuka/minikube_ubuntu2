@@ -438,8 +438,8 @@ spec:
     requests:
       storage: 1Gi
 
-$ ssh docker@192.168.99.100
-docker@192.168.99.100's password: tcuser
+$ ssh docker@192.168.99.109
+docker@192.168.99.109's password: tcuser
 
 $ cat /var/data/default.conf 
 upstream proxy.com {
@@ -459,7 +459,23 @@ server {
 ```
 # 10. Make nginx's yaml file and run it. 
 ```
-$ cat nginx_1.14.2_nodeSelector.yaml 
+$ cat nginx_1.14.2_nodeSelector_svc.yaml 
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-test
+  labels:
+    run: nginx-test
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 8080
+    targetPort: 80
+    protocol: TCP
+    name: http
+  selector:
+    run: nginx-test
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -489,15 +505,13 @@ spec:
       nodeSelector:
         location: tokyo
 
-$ kubectl create -f nginx_1.14.2_nodeSelector.yaml 
+$ kubectl create -f nginx_1.14.2_nodeSelector_svc.yaml 
 deployment.apps/nginx-test created
 
 ```
 
-# 11. Expose nginx's demployment. Acces the following URL from Host's blowser.
+# 11. Check if employee's deployment is exposed. Acces the following URL from Host's blowser.
 ```
-$ kubectl expose deployment nginx-test --type=LoadBalancer
-service/nginx-test exposed
 
 $ minikube service list
 |-------------|---------------|--------------|-----------------------------|
@@ -506,8 +520,9 @@ $ minikube service list
 | default     | employee-test | No node port |
 | default     | kubernetes    | No node port |
 | default     | mongo-test    | No node port |
-| default     | nginx-test    |           80 | http://192.168.99.100:30025 |
+| default     | nginx-test    | http/8080    | http://192.168.99.109:32502 |
 | kube-system | kube-dns      | No node port |
 |-------------|---------------|--------------|-----------------------------|
+
 
 ```
