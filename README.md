@@ -96,6 +96,7 @@ $ minikube service list
 $ kubectl create -f dnsutils_latest.yaml 
 pod/dnsutils created
 
+$ kubectl exec -it dnsutils -- /bin/sh
 # nslookup mongo-tset
 Server:		10.96.0.10
 Address:	10.96.0.10#53
